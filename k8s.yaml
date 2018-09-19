@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: spring-demo
+  namespace: kube-ops
+spec:
+  template:
+    metadata:
+      labels:
+        app: spring-demo
+    spec:
+      containers:
+      - image: heweix86/spring-demo:7751ab3
+        imagePullPolicy: IfNotPresent
+        name: spring-demo
+        ports:
+        - containerPort: 8000
