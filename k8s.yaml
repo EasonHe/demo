@@ -10,7 +10,7 @@ spec:
         app: spring-demo
     spec:
       containers:
-      - image: heweix86/spring-demo:7751ab3
+      - image: heweix86/spring-demo:<BUILD_TAG>
         imagePullPolicy: IfNotPresent
         name: spring-demo
         ports:
