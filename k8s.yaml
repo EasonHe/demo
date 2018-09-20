@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: spring-demo
-  namespace: kube-ops
+  namespace: <Name_Space>
 spec:
   template:
     metadata:
