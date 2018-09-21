@@ -4,6 +4,12 @@ metadata:
   name: spring-demo
   namespace: <Name_Space>
 spec:
+  replicas: 2
+  strategy:  # k8s 默认的 strategy 就是 RollingUpdate， 这里写明出来可以调节细节参数
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1  # 更新时允许最大激增的容器数，默认 replicas 的 1/4 向上取整
+      maxUnavailable: 1  # 更新时允许最大 unavailable 容器数，默认 replicas 的 1/4 向下取整
   template:
     metadata:
       labels:
