@@ -5,6 +5,7 @@ metadata:
   namespace: <Name_Space>
 spec:
   replicas: 2
+  revisionHistoryLimit: 5  #保存的历史版本数
   minReadySeconds: 20  # 容器启动到服务正常启动时间
   strategy:  # k8s 默认的 strategy 就是 RollingUpdate， 这里写明出来可以调节细节参数
     type: RollingUpdate
