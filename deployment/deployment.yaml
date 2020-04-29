@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-demo
+  namespace: demo  #<Name_Space>
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5  #保存的历史版本数
+  minReadySeconds: 20  # 容器启动到服务正常启动时间
+  strategy:  # k8s 默认的 strategy 就是 RollingUpdate， 这里写明出来可以调节细节参数
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1  # 更新时允许最大激增的容器数，默认 replicas 的 1/4 向上取整
+      maxUnavailable: 1  # 更新时允许最大 unavailable 容器数，默认 replicas 的 1/4 向下取整
+  template:
+    metadata:
+      labels:
+        app: spring-demo
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/hewei-demo/demo:rsyslog  #<BUILD_TAG>
+        imagePullPolicy: IfNotPresent
+        name: spring-demo
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: diamond-client-empty-path
+        securityContext:
+          allowPrivilegeEscalation:  false
+        command: ["/bin/echo","$DIAMOND_CLIENT_CONF >  ~/.diamond-client/diamond-client.properties","&&",/bin/sleep","1800"]
+        env:
+          - name: DIAMOND_CLIENT_CONF
+            valueFrom:
+              configMapKeRef:
+                name: diamond-client-config
+                key: diamond-client.properties
+      nodeSelector:
+      affinity:
+      tolerations:
+      securityContext:
+        runAsUser: 666
+        runAsGroup: 666
+        fsGroup: 666
+      volumes:
+      - name: diamond-client-config
+        configMap:
+          name: diamond-client-config
+      - name: diamond-client-empty-path
+        emptyDir: {}
+   
