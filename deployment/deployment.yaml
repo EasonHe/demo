@@ -30,11 +30,11 @@ spec:
           allowPrivilegeEscalation:  false
         command: ["/bin/echo","$DIAMOND_CLIENT_CONF >  ~/.diamond-client/diamond-client.properties","&&",/bin/sleep","1800"]
         env:
-        - name: DIAMOND_CLIENT_CONF
-            valueFrom:
-              configMapKeyRef:
-                name: diamond-client-config
-                key: diamond-client.properties
+          - name: DIAMOND_CLIENT_CONF
+              valueFrom:
+                configMapKeyRef:
+                  name: diamond-client-config
+                  key: diamond-client.properties
       nodeSelector:
       affinity:
       tolerations:
