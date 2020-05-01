@@ -21,24 +21,27 @@ spec:
       labels:
         app: spring-demo
     spec:
+      initContainers:
+      - image: alpine:3.11.6
+        name: init-config
+        command: ["cp","/diamond-client-config/diamond-client.properties","/diamond-client-empty-path/" ]
+        volumeMounts:
+          - name: diamond-client-config
+            mountPath: /diamond-client-config
+          - name: diamond-client-empty-path
+            mountPath: /diamond-client-empty-path
       containers:
       - image: registry.cn-beijing.aliyuncs.com/hewei-demo/demo:rsyslog  #<BUILD_TAG>
         imagePullPolicy: IfNotPresent
         name: spring-demo
         ports:
         - containerPort: 8000
-        volumeMounts:
-        - name: diamond-client-empty-path
-          mountPath: /home/app/.diamond-server/
         securityContext:
           allowPrivilegeEscalation:  false
-        command: ["/bin/echo","$DIAMOND_CLIENT_CONF >  ~/.diamond-client/diamond-client.properties","&&","/bin/sleep","1800"]
-        env:
-          - name: DIAMOND_CLIENT_CONF
-            valueFrom:
-              configMapKeyRef:
-                name: diamond-client-config
-                key: diamond-client.properties
+        command: ["/bin/sleep","1800"]
+        volumeMounts:
+          - name: diamond-client-empty-path
+            mountPath: /home/app/.diamond-client
       nodeSelector:
       affinity:
       tolerations:

@@ -8,4 +8,4 @@ USER app
 WORKDIR /home/app
 COPY --chown=app:app  target/${JAR_FILE}  app.jar
 #CMD ["sleep","3600"]
-#ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","app.jar"]

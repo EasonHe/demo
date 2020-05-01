@@ -1,6 +1,7 @@
 apiVersion: v1
 data:
-  diamond-client.properties: DiamondServer.address=diamond-server:80
+  diamond-client.properties: |
+    DiamondServer.address=diamond-server:80
 kind: ConfigMap
 metadata:
   namespace: demo
