@@ -31,7 +31,7 @@ spec:
           - name: diamond-client-empty-path
             mountPath: /diamond-client-empty-path
       containers:
-      - image: registry.cn-beijing.aliyuncs.com/hewei-demo/demo:rsyslog  #<BUILD_TAG>
+      - image: registry.cn-beijing.aliyuncs.com/hewei-demo/demo:rsyslog001  #<BUILD_TAG>
         imagePullPolicy: IfNotPresent
         name: spring-demo
         ports:
