@@ -38,7 +38,7 @@ spec:
         - containerPort: 8000
         securityContext:
           allowPrivilegeEscalation:  false
-        command: ["/bin/sleep","1800"]
+        command: ["java","-Djava.security.egd=file:/dev/./urandom","-jar","app.jar"]
         volumeMounts:
           - name: diamond-client-empty-path
             mountPath: /home/app/.diamond-client
