@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-demo
+  namespace: saas-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-demo
+  revisionHistoryLimit: 5  #保存的历史版本数
+  minReadySeconds: 0  # 容器启动到服务正常启动时间
+  strategy:  # k8s 默认的 strategy 就是 RollingUpdate， 这里写明出来可以调节细节参数
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1  # 更新时允许最大激增的容器数，默认 replicas 的 1/4 向上取整
+      maxUnavailable: 0 # 更新时允许最大 unavailable 容器数，默认 replicas 的 1/4 向下取整
+
+  template:
+    metadata:
+      labels:
+        app: spring-demo
+    spec:
+      initContainers:
+      - image: alpine:3.11.6
+        name: init-config
+        securityContext:
+          privileged: true
+        command: ["cp","/diamond-client-config/diamond-client.properties","/diamond-client-data-path/" ]
+        volumeMounts:
+          - name: diamond-client-config
+            mountPath: /diamond-client-config
+          - name: diamond-client-data-path
+            mountPath: /diamond-client-data-path
+      containers:
+      - image: <image_url>  #<BUILD_TAG>
+        imagePullPolicy: Always #IfNotPresent
+        name: <App_Name>
+        ports:
+        - containerPort: 8000
+        securityContext:
+          allowPrivilegeEscalation:  false
+        #command: ["tini","java","-Duser.timezone=GMT+08","-Djava.security.egd=file:/dev/./urandom","-Dserver.port=8000","-jar","app.jar","--server.address=0.0.0.0"]
+        command: ["java","-Duser.timezone=GMT+08","-Djava.security.egd=file:/dev/./urandom","-Dserver.port=8000","-jar","app.jar","--server.address=0.0.0.0"]
+        volumeMounts:
+          - name: diamond-client-data-path
+            mountPath: /home/app/.diamond-client
+        securityContext:
+          allowPrivilegeEscalation:  true
+        ports:
+          - name: http
+            containerPort: 8000
+            protocol: TCP
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          tcpSocket:
+            port: 8000
+        readinessProbe:
+          initialDelaySeconds: 55
+          periodSeconds: 7
+          tcpSocket:
+            port: 8000       
+        #  httpGet:
+        #    path: /m
+        #    port: 8000
+        #  initialDelaySeconds: 120
+        #  periodSeconds: 10
+        #readinessProbe:
+        #  httpGet:
+        #    path: /m
+        #    port: 8000
+        #  initialDelaySeconds: 10
+        #  periodSeconds: 10
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 400Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+      nodeSelector:
+      affinity:
+      tolerations:
+      #securityContext:
+      #  runAsUser: 666
+      #  runAsGroup: 666
+      #  fsGroup: 666
+      #volumes:
+      #- name: diamond-client-config
+      #  configMap:
+      #    name: diamond-client-config 
+      #- name: diamond-client-data-path   #与上面volumeMounts的name对应
+      #  persistentVolumeClaim:
+      #    claimName: pvc-test-saas-diamond-client
+
